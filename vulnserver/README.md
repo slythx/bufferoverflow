@@ -37,7 +37,7 @@ Notes:
 > We can use these command to test if the target is vulnerable to bufferoverflow. 
 > We will try use STATS but **spoiler alert, TRUN is the correct payload for this exercise.
 
-3. We will create files with payload and try if the target machine is vulnerable to bufferoverflow. Create a filed called 'stats.spk' and ‘trun.spk’
+3. We will create files with payload and try if the target machine is vulnerable to bufferoverflow. Create a filed called '[stats.spk](https://github.com/slythx/bufferoverflow/blob/master/vulnserver/stats.spk)' and ‘[trun.spk](https://github.com/slythx/bufferoverflow/blob/master/vulnserver/trun.spk)’
 
 ````spk
 s_readline();
