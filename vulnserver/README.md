@@ -1,6 +1,8 @@
 # A simple walkthrough for a Windows vulnerable server (vulnserver.exe)
 
-This tutorial is based on the "Practical Ethical Hacking - The Complete Course", a Udemy course made by "The Cyber Mentor". Thank you Mr. Heath Adams!
+This tutorial is based on the "Practical Ethical Hacking - The Complete Course", a Udemy course made by "The Cyber Mentor". 
+
+Thank you Mr. Heath Adams!
 
 # Requirements
 - Download and install: Kali (for attacker machine) and windows 10 (victim's machine)
@@ -29,12 +31,12 @@ This tutorial is based on the "Practical Ethical Hacking - The Complete Course",
 ```
 $ nc -nv 192.168.17.134 9999
 ```
-This will be the result if you type **HELP**
+>Type **HELP** to show commands
 
 ![HELP_cmd](https://github.com/slythx/bufferoverflow/blob/master/vulnserver/img/HELP_command.png)
 
 >We can use these command to test if the target is vulnerable to bufferoverflow. \
->We will try use STATS but **spoiler alert, TRUN is the correct payload for this exercise.
+>We will try use **STATS** but **spoiler alert, **TRUN** is the correct payload command for this exercise.
 
 3. We will create files with payload and try if the target machine is vulnerable to bufferoverflow. Create a filed called '[stats.spk](https://github.com/slythx/bufferoverflow/blob/master/vulnserver/stats.spk)' and ‘[trun.spk](https://github.com/slythx/bufferoverflow/blob/master/vulnserver/trun.spk)’
 
@@ -73,7 +75,7 @@ $ generic_send_tcp 192.168.17.134 9999 stats.spk 0 0
 
 ![fuzzing_output_img](https://github.com/slythx/bufferoverflow/blob/master/vulnserver/img/fuzzing_output.png) 
 
->**IMPORTANT NOTE!** Always close and re-run the IMD and vulnserver.exe as administrator before doing new attack test.
+>**IMPORTANT NOTE!** Always close and re-run the **IMD** and **vulnserver.exe** as administrator before doing new attack test.
 
 6. Check the **IMD**, **STATS** command will not make the target crash so we will try the **TRUN** command.
 
@@ -81,8 +83,8 @@ $ generic_send_tcp 192.168.17.134 9999 stats.spk 0 0
 $ generic_send_tcp 192.168.17.134 9999 trun.spk 0 0
 ```
 
->Check the **IMD** again and it should look like this. We can see bunch of **A**s and hex **41414141** \
->**41** means hex of letter **A**. Four bytes of **41** is equal to hex **41414141** \
+>Check the **IMD** again and it should look like this. We can see bunch of **A**s and hex **41414141**. \
+>**41** means hex of letter **A**. Four bytes of **41** is equal to hex **41414141**. \
 >Our payload using **TRUN** command is successful and made the vulnserver crashed!!! Now we confirmed that the server is vulnerable to bufferoverflow!
 
 ![spiking_srcshot](https://github.com/slythx/bufferoverflow/blob/master/vulnserver/img/spiking_srcshot.png) 
@@ -96,7 +98,7 @@ $ generic_send_tcp 192.168.17.134 9999 trun.spk 0 0
 
 ## II. Fuzzing
 
-1. We will automate the sending of bunch of As using python script. Make a python2 script ‘fuzz.py’ and copy paste this script.
+1. We will automate the sending of bunch of As using python script. Make a python2 script ‘**fuzz.py**’ and copy paste this script.
 
 >fuzz.py
 
@@ -130,7 +132,7 @@ $ chmod +x fuzz.py
 ```
 
 >**Q: What does this code do?** \
->A: The script sends 100 As to the vulnserver then it adds another 100 As, so the buffers grows every iteration until it crash.
+>A: The script sends 100 **A**s to the vulnserver then it adds another 100 **A**s, so the buffers grows every iteration until it crash.
 
 2. Close and re-run the **IMD** and **vulnserver.exe**. Re-attach vulnserver to IMD then hit the Run button. Makse sure the status is '**Runing**'.
 
@@ -368,7 +370,7 @@ except:
 
 ![set_breakpoint](https://github.com/slythx/bufferoverflow/blob/master/vulnserver/img/set_breakpoint.png)
 
-13. In Kali, run the **./right_module.py**. Check the **IMD** and this must be the result. We overwritten the **EIP** and the **IMD** status is now Paused ![paused](https://github.com/slythx/bufferoverflow/blob/master/vulnserver/img/paused.png)
+13. In Kali, run the **./right_module.py**. Check the **IMD** and this must be the result. We overwritten the **EIP** and the **IMD** status is now ![paused](https://github.com/slythx/bufferoverflow/blob/master/vulnserver/img/paused.png)
 
 ![registers_eip_625011af](https://github.com/slythx/bufferoverflow/blob/master/vulnserver/img/registers_eip_625011af.png)
 
@@ -436,13 +438,14 @@ except:
 	
 ````
 
->'A' * 2003				; buffer \		
->"\xaf\x11\x50\x62"		; Jump address \
->"\x90" * 32			; NOPs sled	\
-> overflow				; reverse shell code# 'A' * 2003
+>'A' * 2003				# buffer \		
+>'\xaf\x11\x50\x62'		# Jump address \
+>'\x90' * 32			# NOPs sled	(padding) \
+> overflow				# reverse shell code# 'A' * 2003
 
 >**Q: What is NOPs?** \
->A: A little bit of padding in between jump address and actual shell code.
+>A: **x90** hex code or **No Operation Code** is a little bit of padding in between jump address and overflow. If we don't have this, there is a possibility that the overflow will not work. \
+   If you have limited space, use only small bytes (play around 8 or 16 bytes until you figure it out)
 
 3. Run **vulnserver.exe** (No need to use **IMD**)
 
