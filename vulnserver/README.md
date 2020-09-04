@@ -58,7 +58,7 @@ s_string_variable("0");
 
 	![vulnserver_attach_img](https://github.com/slythx/bufferoverflow/blob/master/vulnserver/img/vulnserver_attach.png)
 
-It will look something like this:
+It will look something like this
 
 	![imd_vulnserver_attached_img](https://github.com/slythx/bufferoverflow/blob/master/vulnserver/img/imd_vulnserver_attached.png)
 
@@ -70,6 +70,7 @@ It will look something like this:
 ```
 $ generic_send_tcp 192.168.17.134 9999 stats.spk 0 0
 ```
+
 	![fuzzing_output_img](https://github.com/slythx/bufferoverflow/blob/master/vulnserver/img/fuzzing_output.png) 
 
 >**IMPORTANT NOTE!** Always close and re-run the IMD and vulnserver.exe as administrator before doing new attack test.
@@ -128,7 +129,7 @@ while True:
 $ chmod +x fuzz.py
 ```
 
->**Q: What does this code do?**
+>**Q: What does this code do?** \
 >A: The script sends 100 As to the vulnserver then it adds another 100 As, so the buffers grows every iteration until it crash.
 
 2. Close and re-run the **IMD** and **vulnserver.exe**. Re-attach vulnserver to IMD then hit the Run button. Makse sure the status is '**Runing**'.
