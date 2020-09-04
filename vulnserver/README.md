@@ -65,8 +65,8 @@ It will look something like this:
 
 Note:
 
->In the lower right you can see the status **Paused** ![paused_img](https://github.com/slythx/bufferoverflow/blob/master/vulnserver/img/paused.png) \
->Click the run button on the menu ![IMD_run_icon](https://github.com/slythx/bufferoverflow/blob/master/vulnserver/img/IMD_run_icon.png) to change the status to **Running** ![running_status](https://github.com/slythx/bufferoverflow/blob/master/vulnserver/img/running.png) 
+>- In the lower right you can see the status **Paused** ![paused_img](https://github.com/slythx/bufferoverflow/blob/master/vulnserver/img/paused.png) \
+>- Click the run button on the menu ![IMD_run_icon](https://github.com/slythx/bufferoverflow/blob/master/vulnserver/img/IMD_run_icon.png) to change the status to **Running** ![running_status](https://github.com/slythx/bufferoverflow/blob/master/vulnserver/img/running.png) 
 
 5. On Kali, run **generic_send_tcp** <target_ip> <port> <payload_file.spk> 0 0.
 
@@ -83,19 +83,19 @@ $ generic_send_tcp 192.168.17.134 9999 stats.spk 0 0
 $ generic_send_tcp 192.168.17.134 9999 trun.spk 0 0
 ```
 
->Check the **IMD** again and it should look like this. We can see bunch of **A**s and hex **41414141** \
->**41** means hex of letter **A**. Four bytes of **41** is equal to hex **41414141** \
->Our payload using **TRUN** command is successful and made the vulnserver crashed!!! Now we confirmed that the server is vulnerable to bufferoverflow!
+>- Check the **IMD** again and it should look like this. We can see bunch of **A**s and hex **41414141** \
+>- **41** means hex of letter **A**. Four bytes of **41** is equal to hex **41414141** \
+>- Our payload using **TRUN** command is successful and made the vulnserver crashed!!! Now we confirmed that the server is vulnerable to bufferoverflow!
 
 ![spiking_srcshot](https://github.com/slythx/bufferoverflow/blob/master/vulnserver/img/spiking_srcshot.png) 
 
 Note:
->Q: How and why the system crashed? \
->A: By sending bunch of As, to the stack buffer. The stack buffer (EAX register) over flows and we successfully allocated As to the Base Pointer (EBP) and Instruction Pointer (EIP). We can see that EBP and EIP values are all 41414141
+>**Q: How and why the system crashed?** \
+>**A:** By sending bunch of As, to the stack buffer. The stack buffer (EAX register) over flows and we successfully allocated As to the Base Pointer (EBP) and Instruction Pointer (EIP). We can see that EBP and EIP values are all 41414141
 
 
->Q: What is EIP and why it is very important to understand? \
->A: The Instruction Pointer (IP) is where the actual command executes!! So, if we can overwrite this, we can send malicious code and gain reverse shell.
+>**Q: What is EIP and why it is very important to understand?** \
+>**A:** The Instruction Pointer (IP) is where the actual command executes!! So, if we can overwrite this, we can send malicious code and gain reverse shell.
 
 
 
