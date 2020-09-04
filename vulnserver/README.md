@@ -1,6 +1,6 @@
-# A simple walkthrough for a windows vulnerable server (vulnserver.exe)
+# A simple walkthrough for a Windows vulnerable server (vulnserver.exe)
 
-This tutorial is based on the "Practical Ethical Hacking - The Complete Course", a Udemy course made by Mr. Heath Adams (The Cyber Mentor)
+This tutorial is based on the "Practical Ethical Hacking - The Complete Course", a Udemy course made by "The Cyber Mentor". Thank you Mr. Heath Adams!
 
 # Requirements
 - Download and install: Kali (for attacker machine) and windows 10 (victim's machine)
@@ -325,7 +325,7 @@ $ locate nasm_shell
 
    ![jmp_esp](https://github.com/slythx/bufferoverflow/blob/master/vulnserver/img/jmp_esp.png)
 
-9. In IMD bottom textbox, type **!mona find -s "\xff\xe4" -m essfunc.dll** \
+9. In IMD bottom textbox, type **!mona find -s "\xff\xe4" -m essfunc.dll** 
  
 >We can see that the memory address is **625011AF**. We will use this later, this is very important.
 
@@ -436,9 +436,9 @@ except:
 	
 ````
 
->'A' * 2003				; buffer		
->"\xaf\x11\x50\x62"		; Jump address		
->"\x90" * 32			; NOPs sled	
+>'A' * 2003				; buffer \		
+>"\xaf\x11\x50\x62"		; Jump address \
+>"\x90" * 32			; NOPs sled	\
 > overflow				; reverse shell code# 'A' * 2003
 
 >**Q: What is NOPs?** \
