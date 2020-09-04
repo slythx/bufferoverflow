@@ -31,9 +31,8 @@ $ nc -nv 192.168.17.134 9999
 ```
 This will be the result if you type **HELP**
 
-![HELP_cmd](https://github.com/slythx/bufferoverflow/blob/master/vulnserver/img/HELP_command.png)
+	![HELP_cmd](https://github.com/slythx/bufferoverflow/blob/master/vulnserver/img/HELP_command.png)
 
-Notes:
 >We can use these command to test if the target is vulnerable to bufferoverflow. 
 >We will try use STATS but **spoiler alert, TRUN is the correct payload for this exercise.
 
@@ -55,25 +54,23 @@ s_string_variable("0");
 ```
 4. Open **IMD** as administrator, click File > Attach > select vulnserver > click Attach > click the run icon ![IMD_run_icon](https://github.com/slythx/bufferoverflow/blob/master/vulnserver/img/IMD_run_icon.png)
 
-![file_attach_img](https://github.com/slythx/bufferoverflow/blob/master/vulnserver/img/file_attach.png)
+	![file_attach_img](https://github.com/slythx/bufferoverflow/blob/master/vulnserver/img/file_attach.png)
 
-![vulnserver_attach_img](https://github.com/slythx/bufferoverflow/blob/master/vulnserver/img/vulnserver_attach.png)
+	![vulnserver_attach_img](https://github.com/slythx/bufferoverflow/blob/master/vulnserver/img/vulnserver_attach.png)
 
 It will look something like this:
 
-![imd_vulnserver_attached_img](https://github.com/slythx/bufferoverflow/blob/master/vulnserver/img/imd_vulnserver_attached.png)
+	![imd_vulnserver_attached_img](https://github.com/slythx/bufferoverflow/blob/master/vulnserver/img/imd_vulnserver_attached.png)
 
-Note:
-
->- In the lower right you can see the status **Paused** ![paused_img](https://github.com/slythx/bufferoverflow/blob/master/vulnserver/img/paused.png) \
->- Click the run button on the menu ![IMD_run_icon](https://github.com/slythx/bufferoverflow/blob/master/vulnserver/img/IMD_run_icon.png) to change the status to **Running** ![running_status](https://github.com/slythx/bufferoverflow/blob/master/vulnserver/img/running.png) 
+>In the lower right you can see the status **Paused** ![paused_img](https://github.com/slythx/bufferoverflow/blob/master/vulnserver/img/paused.png) \
+>Click the run button on the menu ![IMD_run_icon](https://github.com/slythx/bufferoverflow/blob/master/vulnserver/img/IMD_run_icon.png) to change the status to **Running** ![running_status](https://github.com/slythx/bufferoverflow/blob/master/vulnserver/img/running.png) 
 
 5. On Kali, run **generic_send_tcp** <target_ip> <port> <payload_file.spk> 0 0.
 
 ```
 $ generic_send_tcp 192.168.17.134 9999 stats.spk 0 0
 ```
-![fuzzing_output_img](https://github.com/slythx/bufferoverflow/blob/master/vulnserver/img/fuzzing_output.png) 
+	![fuzzing_output_img](https://github.com/slythx/bufferoverflow/blob/master/vulnserver/img/fuzzing_output.png) 
 
 >**IMPORTANT NOTE!** Always close and re-run the IMD and vulnserver.exe as administrator before doing new attack test.
 
@@ -83,9 +80,9 @@ $ generic_send_tcp 192.168.17.134 9999 stats.spk 0 0
 $ generic_send_tcp 192.168.17.134 9999 trun.spk 0 0
 ```
 
->- Check the **IMD** again and it should look like this. We can see bunch of **A**s and hex **41414141** \
->- **41** means hex of letter **A**. Four bytes of **41** is equal to hex **41414141** \
->- Our payload using **TRUN** command is successful and made the vulnserver crashed!!! Now we confirmed that the server is vulnerable to bufferoverflow!
+>Check the **IMD** again and it should look like this. We can see bunch of **A**s and hex **41414141** \
+>**41** means hex of letter **A**. Four bytes of **41** is equal to hex **41414141** \
+>Our payload using **TRUN** command is successful and made the vulnserver crashed!!! Now we confirmed that the server is vulnerable to bufferoverflow!
 
 ![spiking_srcshot](https://github.com/slythx/bufferoverflow/blob/master/vulnserver/img/spiking_srcshot.png) 
 
@@ -145,7 +142,7 @@ $ ./fuzz.py
 4. Observe the **IMD** and wait for it to crash then immediately terminate the fuzz.py script by pressing **CTRL + C**. \
    We can see in the **IMD* that the vulserver crash by checking its status to **Paused** and also we see again the bunch of As in the **Registers** section.
 
-![fuzzing_crashed](https://github.com/slythx/bufferoverflow/blob/master/vulnserver/img/fuzzing_crashed.png)
+   ![fuzzing_crashed](https://github.com/slythx/bufferoverflow/blob/master/vulnserver/img/fuzzing_crashed.png)
 
 5. We see that the vulnserver crashed at around 2200 bytes. So the Offset must be less than 2200 bytes. \
    If you CTRL + C and your result is not 2200 bytes, that's okay because the Offset must be less than what you get in the result.
