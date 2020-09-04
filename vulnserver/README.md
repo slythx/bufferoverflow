@@ -29,31 +29,70 @@ This tutorial is based on the "Practical Ethical Hacking - The Complete Course",
 ```
 $ nc -nv 192.168.17.134 9999
 ```
-This will be the result if you type HELP
+This will be the result if you type **HELP**
 
-![vulnserver demo](/img/HELP_command.png)
+![HELP_cmd](https://github.com/slythx/bufferoverflow/blob/master/vulnserver/img/HELP_command.png)
 
 Notes:
-> We can use these command to test if the target is vulnerable to bufferoverflow. 
-> We will try use STATS but **spoiler alert, TRUN is the correct payload for this exercise.
+>We can use these command to test if the target is vulnerable to bufferoverflow. 
+>We will try use STATS but **spoiler alert, TRUN is the correct payload for this exercise.
 
 3. We will create files with payload and try if the target machine is vulnerable to bufferoverflow. Create a filed called '[stats.spk](https://github.com/slythx/bufferoverflow/blob/master/vulnserver/stats.spk)' and ‘[trun.spk](https://github.com/slythx/bufferoverflow/blob/master/vulnserver/trun.spk)’
 
-stats.spk
+>stats.spk
 
 ````spk
 s_readline();
 s_string("STATS ");
 s_string_variable("0");
 ````
-trun.spk
+>trun.spk
 
 ```
 s_readline();
 s_string("TRUN ");
 s_string_variable("0");
 ```
-4. Open IMD as administrator, click File > Attach > select vulnserver > click Attach > click the run icon ![vulnserver icon](/img/IMD_run_icon.png)
+4. Open **IMD** as administrator, click File > Attach > select vulnserver > click Attach > click the run icon ![IMD_run_icon](https://github.com/slythx/bufferoverflow/blob/master/vulnserver/img/IMD_run_icon.png)
+
+![file_attach_img](https://github.com/slythx/bufferoverflow/blob/master/vulnserver/img/file_attach.png)
+
+![vulnserver_attach_img](https://github.com/slythx/bufferoverflow/blob/master/vulnserver/img/vulnserver_attach.png)
+
+It will look something like this:
+
+![imd_vulnserver_attached_img](https://github.com/slythx/bufferoverflow/blob/master/vulnserver/img/imd_vulnserver_attached.png)
+
+Note:
+
+>In the lower right you can see the status **Paused** ![paused_img](https://github.com/slythx/bufferoverflow/blob/master/vulnserver/img/paused.png)
+>Click the run button on the menu ![IMD_run_icon](https://github.com/slythx/bufferoverflow/blob/master/vulnserver/img/IMD_run_icon.png) to change the status to **Running** ![running_status](https://github.com/slythx/bufferoverflow/blob/master/vulnserver/img/running.png) 
+
+5. On Kali, run **generic_send_tcp** <target_ip> <port> <payload_file.spk> 0 0.
+
+```
+$ generic_send_tcp 192.168.17.134 9999 stats.spk 0 0
+```
+![fuzzing_output_img](https://github.com/slythx/bufferoverflow/blob/master/vulnserver/img/fuzzing_output.png) 
+
+>**IMPORTANT NOTE!** Always close and re-run the IMD and vulnserver.exe as administrator before doing new attack test.
+
+6. Check the **IMD**, **STATS** command will not make the target crash so we will try the **TRUN** command.
+
+```
+$ generic_send_tcp 192.168.17.134 9999 trun.spk 0 0
+```
+
+>Check the IMD again and it should look like this. We can see bunch of As and hex 41414141
+>41 means hex of letter A. Four bytes of 41 is equal to hex 41414141
+>Our payload using TRUN command is successful and made the vulnserver crashed!!! Now we confirmed that the server is vulnerable to bufferoverflow!
+
+
+
+
+
+
+
 
 
 
