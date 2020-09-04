@@ -8,6 +8,7 @@ Thank you Mr. Heath Adams!
 - Download and install: Kali (for attacker machine) and windows 10 (victim's machine)
 - Immunity Debugger: https://www.immunityinc.com/products/debugger/
 - Vulnserver: http://www.thegreycorner.com/p/vulnserver.html
+- Install Immunity Debugger and Vulnserver on Windows VM
 
 # Things to remember:
 1. Make sure you disable the Windows Defender in Windows VM.
@@ -35,10 +36,10 @@ $ nc -nv 192.168.17.134 9999
 
 ![HELP_cmd](https://github.com/slythx/bufferoverflow/blob/master/vulnserver/img/HELP_command.png)
 
->We can use these command to test if the target is vulnerable to bufferoverflow. \
+>We can use these commands to test if the target is vulnerable to bufferoverflow. \
 >We will try use **STATS** but **spoiler alert, **TRUN** is the correct payload command for this exercise.
 
-3. We will create files with payload and try if the target machine is vulnerable to bufferoverflow. Create a filed called '[stats.spk](https://github.com/slythx/bufferoverflow/blob/master/vulnserver/stats.spk)' and ‘[trun.spk](https://github.com/slythx/bufferoverflow/blob/master/vulnserver/trun.spk)’
+3. We will create files with payload and try if the target machine is vulnerable to bufferoverflow. Create a file called '[stats.spk](https://github.com/slythx/bufferoverflow/blob/master/vulnserver/stats.spk)' and ‘[trun.spk](https://github.com/slythx/bufferoverflow/blob/master/vulnserver/trun.spk)’
 
 >stats.spk
 
@@ -75,9 +76,9 @@ $ generic_send_tcp 192.168.17.134 9999 stats.spk 0 0
 
 ![fuzzing_output_img](https://github.com/slythx/bufferoverflow/blob/master/vulnserver/img/fuzzing_output.png) 
 
->**IMPORTANT NOTE!** Always close and re-run the **IMD** and **vulnserver.exe** as administrator before doing new attack test.
+>**IMPORTANT NOTE!** Always close and re-run the **IMD** and **vulnserver.exe** as administrator before testing new attack.
 
-6. Check the **IMD**, **STATS** command will not make the target crash so we will try the **TRUN** command.
+6. Check the **IMD**. **STATS** command will not make the target crash so we will try the **TRUN** command.
 
 ```
 $ generic_send_tcp 192.168.17.134 9999 trun.spk 0 0
@@ -90,15 +91,15 @@ $ generic_send_tcp 192.168.17.134 9999 trun.spk 0 0
 ![spiking_srcshot](https://github.com/slythx/bufferoverflow/blob/master/vulnserver/img/spiking_srcshot.png) 
 
 >**Q: How and why the system crashed?** \
->A: By sending bunch of As, to the stack buffer. The stack buffer (EAX register) over flows and we successfully allocated As to the Base Pointer (EBP) and Instruction Pointer (EIP). We can see that EBP and EIP values are all 41414141
+>A: By sending bunch of **A**s to the stack buffer. The stack buffer (EAX register) over flows and we successfully allocated letter **A**s to the **Base Pointer (EBP)** and **Instruction Pointer (EIP)**. We can see that **EBP** and **EIP** values are all **41414141**.
 
 
 >**Q: What is EIP and why it is very important to understand?** \
->A: The Instruction Pointer (IP) is where the actual command executes!! So, if we can overwrite this, we can send malicious code and gain reverse shell.
+>A: The **Instruction Pointer (IP)** is where the actual command executes!! So, if we can overwrite this, we can send malicious code and gain reverse shell.
 
 ## II. Fuzzing
 
-1. We will automate the sending of bunch of As using python script. Make a python2 script ‘**fuzz.py**’ and copy paste this script.
+1. We will automate the sending of bunch of **A**s using python script. Make a python2 script ‘**fuzz.py**’ and copy paste this script.
 
 >fuzz.py
 
@@ -132,9 +133,9 @@ $ chmod +x fuzz.py
 ```
 
 >**Q: What does this code do?** \
->A: The script sends 100 **A**s to the vulnserver then it adds another 100 **A**s, so the buffers grows every iteration until it crash.
+>A: The script sends 100 **A**s to the vulnserver then it adds another 100 **A**s, so the buffer grows every iteration until it crash.
 
-2. Close and re-run the **IMD** and **vulnserver.exe**. Re-attach vulnserver to IMD then hit the Run button. Makse sure the status is '**Runing**'.
+2. Close and re-run the **IMD** and **vulnserver.exe**. Re-attach vulnserver to IMD then hit the Run button. Make sure that the status is '**Runing**'.
 
 3. Run the python2 script:
 
@@ -142,8 +143,8 @@ $ chmod +x fuzz.py
 $ ./fuzz.py
 ```
 
-4. Observe the **IMD** and wait for it to crash then immediately terminate the fuzz.py script by pressing **CTRL + C**. \
-   We can see in the **IMD** that the vulserver crash by checking its status to **Paused** and also we see again the bunch of As in the **Registers** section.
+4. Observe the **IMD** and wait for it to crash then immediately terminate the **fuzz.py** script in your Kali VM by pressing **CTRL + C**. \
+   We can see in the **IMD** that the vulserver crashed by checking its status to **Paused** and also we see again the bunch of As in the **Registers** section.
 
    ![fuzzing_crashed](https://github.com/slythx/bufferoverflow/blob/master/vulnserver/img/fuzzing_crashed.png)
 
@@ -162,7 +163,7 @@ $ /usr/share/metasploit-framework/tools/exploit/pattern_create.rb -l 3000
 
 ![pattern_create_rb](https://github.com/slythx/bufferoverflow/blob/master/vulnserver/img/pattern_create_rb.png)
 
-3. Create a python file called ‘**offset.py**’ and add +x permission to it then copy paste this code.
+3. Create a python file called ‘**offset.py**’ and add +x permission to it then copy paste this code. (Change offset value if necessary)
 
 >offset.py
 
@@ -209,8 +210,8 @@ $ /usr/share/metasploit-framework/tools/exploit/pattern_offset.rb -l 3000 -q 386
    
 ## IV. Overwritting the EIP
 
-1. Now we know that the Offset is in **2003** bytes, we know where to overwrite the EIP with our own payload. \
-   Create a python script named ‘overwrite_eip.py’ and add +x to its permission
+1. Now we know that the Offset is on **2003** bytes, we know where to overwrite the EIP with our own payload. \
+   Create a python script named ‘***overwrite_eip.py***’ and add +x to its permission
 
 >overwrite_eip.py
 
@@ -303,7 +304,7 @@ except:
 
 ## V. Finding the right Module   
 
-1. Download https://github.com/corelan/mona/blob/master/mona.py to your Windows machine
+1. Download https://github.com/corelan/mona/blob/master/mona.py to your Windows VM
 
 2. Paste it in **"C:\Program Files (x86)\Immunity Inc\Immunity Debugger\PyCommands"**
 
@@ -359,7 +360,7 @@ except:
 
 
 >**Q: Why the memory address is written backwards?** \
->A: In x86 architecture stpres the lower order byte at the lowest memory address and higher byte in highest address. So, we have to put it in reverse order.
+>A: In x86 architecture, it stores the lower order byte at the lowest memory address and higher byte in highest address. So, we have to put it in reverse order.
 
 11. In IMD, find memory address by clicking this black forward icon ![find_mem_address](https://github.com/slythx/bufferoverflow/blob/master/vulnserver/img/find_mem_address.png) on the top menu, enter the memory addres (jump code). Click **OK**.
 
@@ -446,7 +447,7 @@ except:
 
 4. On Kali, set a netcat listening port to 4444 ‘**nc -nvlp 4444**’
 
-5. Open new terminal and run **./exploit.py**
+5. Open new terminal and run **./exploit.py** then check your netcat.
 
    ![root](https://github.com/slythx/bufferoverflow/blob/master/vulnserver/img/root.png)
 
