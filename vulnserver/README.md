@@ -359,7 +359,7 @@ except:
 
 
 >**Q: Why the memory address is written backwards?** \
->A: In x86 architecture stpres the lower order byte at the lowest memory address and higher byte in highest address. So, we have to put it in reverse order.
+>A: In x86 architecture stores the lower order byte at the lowest memory address and higher byte in highest address. So, we have to put it in reverse order.
 
 11. In IMD, find memory address by clicking this black forward icon ![find_mem_address](https://github.com/slythx/bufferoverflow/blob/master/vulnserver/img/find_mem_address.png) on the top menu, enter the memory addres (jump code). Click **OK**.
 
