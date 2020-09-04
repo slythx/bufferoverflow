@@ -5,14 +5,14 @@ This tutorial is based on the "Practical Ethical Hacking - The Complete Course",
 Thank you Mr. Heath Adams!
 
 # Requirements
-- Download and install: Kali (for attacker machine) and windows 10 (victim's machine)
-- Immunity Debugger: https://www.immunityinc.com/products/debugger/
-- Vulnserver: http://www.thegreycorner.com/p/vulnserver.html
+- Download and install: Kali (for attacker machine) and Windows 10 (victim's machine)
+- Download Immunity Debugger: https://www.immunityinc.com/products/debugger/
+- Download Vulnserver: http://www.thegreycorner.com/p/vulnserver.html
 - Install Immunity Debugger and Vulnserver on Windows VM
 
 # Things to remember:
 1. Make sure you disable the Windows Defender in Windows VM.
-2. Allow files and printer sharing in your firewall (make sure you can ping windows VM from your Kali VM).
+2. Allow files and printer sharing in your firewall (make sure you can ping Windows VM from your Kali VM).
 3. Always run Immunity Debugger (IMD) and Vulnserver.exe as Administrator.
 4. Close and re-run Immunity Debugger and Vulnserver.exe after an attack from Kali machine to prevent issues.
 
@@ -22,9 +22,8 @@ Thank you Mr. Heath Adams!
 3. Find the Offset
 4. Overwriting the EIP
 5. Finding Bad Characters
-6. Finding Right Modules (MSF)
-7. Generating shellcode (MSF)
-8. Root!
+6. Finding Right Module (MSF)
+7. Generating Shellcode and gaining root privilege! (MSF)
 
 ## I. Spiking
 1. On windows, open vulnserver.exe (always run as administrator)
@@ -153,7 +152,7 @@ $ ./fuzz.py
 
 ## III. Finding the Offset
 
-1. On Kali create string pattern and use 3000 length of bytes
+1. On Kali create string pattern and use **3000** length of bytes
 
 ```
 $ /usr/share/metasploit-framework/tools/exploit/pattern_create.rb -l 3000
@@ -279,7 +278,6 @@ try:
 	s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 	s.connect(('192.168.17.134', 9999))
 
-	payload = 'TRUN /.:/' + shell_code
 	s.send(('TRUN /.:/' + shell_code))
 	s.close()
 except:
@@ -302,7 +300,7 @@ except:
 
 ![address_hexdump_sample](https://github.com/slythx/bufferoverflow/blob/master/vulnserver/img/address_hexdump_sample.png)
 
-## V. Finding the right Module   
+## VI. Finding the right Module   
 
 1. Download https://github.com/corelan/mona/blob/master/mona.py to your Windows VM
 
@@ -375,7 +373,7 @@ except:
 
 ![registers_eip_625011af](https://github.com/slythx/bufferoverflow/blob/master/vulnserver/img/registers_eip_625011af.png)
 
-## V. Generating Shellcode and gaining root privilege!
+## VII. Generating Shellcode and gaining root privilege!
 
 1. Now that we successfully got control the **EIP**, it's time to generate our malicious code to gain reverse shell. On Kali, enter this command in your terminal. 
 
