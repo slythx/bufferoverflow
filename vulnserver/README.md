@@ -31,7 +31,7 @@ $ nc -nv 192.168.17.134 9999
 ```
 This will be the result if you type HELP
 
-![vulnserver demo](https://github.com/slythx/bufferoverflow/blob/master/vulnserver/img/HELP_command.png)
+![vulnserver demo](/img/HELP_command.png)
 
 Notes:
 > We can use these command to test if the target is vulnerable to bufferoverflow. 
@@ -39,13 +39,21 @@ Notes:
 
 3. We will create files with payload and try if the target machine is vulnerable to bufferoverflow. Create a filed called '[stats.spk](https://github.com/slythx/bufferoverflow/blob/master/vulnserver/stats.spk)' and ‘[trun.spk](https://github.com/slythx/bufferoverflow/blob/master/vulnserver/trun.spk)’
 
+stats.spk
+
 ````spk
 s_readline();
 s_string("STATS ");
 s_string_variable("0");
 ````
+trun.spk
 
-
+```
+s_readline();
+s_string("TRUN ");
+s_string_variable("0");
+```
+4. Open IMD as administrator, click File > Attach > select vulnserver > click Attach > click the run icon ![vulnserver icon](/img/IMD_run_icon.png)
 
 
 
