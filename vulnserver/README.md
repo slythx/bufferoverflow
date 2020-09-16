@@ -206,6 +206,14 @@ $ /usr/share/metasploit-framework/tools/exploit/pattern_offset.rb -l 3000 -q 386
 >This should return 2003 bytes
    
 ![offset_match_2003](https://github.com/slythx/bufferoverflow/blob/master/vulnserver/img/offset_match.png)
+
+>Another way to get the offset value is via **mona.py**
+
+```
+!mona findmsp -distance (your_pattern_byte_length)
+```
+
+>Find the line: "EIP contains normal pattern : 0xffff0000 <offset NNNN>"
    
 ## IV. Overwritting the EIP
 
