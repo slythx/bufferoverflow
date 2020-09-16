@@ -213,7 +213,7 @@ $ /usr/share/metasploit-framework/tools/exploit/pattern_offset.rb -l 3000 -q 386
 !mona findmsp -distance (your_pattern_byte_length)
 ```
 
->Find the line: "EIP contains normal pattern : 0xffff0000 <offset NNNN>"
+>Find the line: "EIP contains normal pattern : 0xffff0000 \<offset NNNN\>"
    
 ## IV. Overwritting the EIP
 
